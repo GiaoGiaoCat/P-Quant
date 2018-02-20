@@ -66,3 +66,7 @@ https://min-api.cryptocompare.com/
   "IsTrading": true
 },
 ```
+
+## 运行
+
+在命令行下面先执行 `chmod +x demo.rb` 再执行 `./demo.rb`
