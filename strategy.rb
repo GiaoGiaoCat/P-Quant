@@ -1,15 +1,16 @@
 class Strategy
-  attr_accessor :average_price, :last_price, :close_price_history
+  attr_accessor :average_price, :last_price, :close_price_history, :risk
 
-  def initialize
+  def initialize(risk)
     self.average_price = nil
     self.last_price = nil
     self.close_price_history = []
+    self.risk = risk
   end
 
   def can_buy?
     return false unless average_price
-    last_price > 1.0041 * average_price
+    last_price > risk * average_price
   end
 
   def can_sell?
@@ -18,6 +19,7 @@ class Strategy
   end
 
   def calculate_average_price
+    return if close_price_history.size < 6
     self.average_price = close_price_history.sum / close_price_history.size
   end
 
@@ -31,9 +33,7 @@ class Strategy
     self.close_price_history << close_price
     self.last_price = open_price
 
-    if close_price_history.size >= 6
-      clear_close_price_history
-      calculate_average_price
-    end
+    clear_close_price_history
+    calculate_average_price
   end
 end

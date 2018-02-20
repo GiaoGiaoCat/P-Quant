@@ -1,21 +1,8 @@
 #!/usr/bin/env ruby
 require 'csv'
+require 'benchmark'
 require './account'
 require './strategy'
-
-START_TIME = ""       # 回测起始时间
-END_TIME = ""         # 回测结束时间
-# BENCHMARK = nil       # 策略参考标准
-# UNIVERSE = nil        # 证券池
-CAPITAL_BASE = 5000   # 起始资金 USDT
-REFRESH_RATE = 1      # 每隔 REFRESH_RATE * 5 分钟调仓
-
-# 策略描述
-# 1. 获取历史数据
-# 2. 每隔 5 分钟进行交割计算
-# 3. 计算 30 分钟均价 average_price
-# 4. 当前时段开盘价 > 1.0041 * average_price 则买入
-# 5. 当前时段开盘价 < average_price 则清仓
 
 # 初始化虚拟账户状态
 def initialize_account
@@ -23,21 +10,36 @@ def initialize_account
 end
 
 # 初始化策略
-def initialize_strategy
-  @strategy = Strategy.new
+def initialize_strategy(risk)
+  @strategy = Strategy.new(risk)
 end
 
-def loopback_testing
+def loopback_testing(risk)
   initialize_account
-  initialize_strategy
+  initialize_strategy(risk)
 
   CSV.foreach('data.csv', headers: true) do |row|
     @account.buy row['open'].to_f, 1000 if @strategy.can_buy?
-    @account.clearance row['open'].to_f if @strategy.can_sell?
+    @account.sell row['open'].to_f, 1000 if @strategy.can_sell?
     @strategy.upgrade row['close'].to_f, row['open'].to_f
+  end
+
+  clearance
+  display_testing_result
+end
+
+def clearance
+  @account.clearance @strategy.last_price
+end
+
+def display_testing_result
+  puts "Money: #{@account.usdt_balance} Risk: #{@strategy.risk}"
+end
+
+function_time = Benchmark.realtime do
+  (0.95...1.02).step(0.001).each do |risk|
+    loopback_testing(risk)
   end
 end
 
-loopback_testing
-puts @account.usdt_balance
-puts @account.coin_balance
+puts "Run time: #{function_time} seconds."
