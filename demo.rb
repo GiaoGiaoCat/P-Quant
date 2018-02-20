@@ -5,10 +5,10 @@ require './strategy'
 
 START_TIME = ""       # 回测起始时间
 END_TIME = ""         # 回测结束时间
-BENCHMARK = nil       # 策略参考标准
-UNIVERSE = nil        # 证券池
+# BENCHMARK = nil       # 策略参考标准
+# UNIVERSE = nil        # 证券池
 CAPITAL_BASE = 5000   # 起始资金 USDT
-REFRESH_RATE = 5      # 每隔 5 分钟调仓
+REFRESH_RATE = 1      # 每隔 REFRESH_RATE * 5 分钟调仓
 
 # 策略描述
 # 1. 获取历史数据
@@ -16,7 +16,6 @@ REFRESH_RATE = 5      # 每隔 5 分钟调仓
 # 3. 计算 30 分钟均价 average_price
 # 4. 当前时段开盘价 > 1.0041 * average_price 则买入
 # 5. 当前时段开盘价 < average_price 则清仓
-
 
 # 初始化虚拟账户状态
 def initialize_account
@@ -33,11 +32,9 @@ def loopback_testing
   initialize_strategy
 
   CSV.foreach('data.csv', headers: true) do |row|
-    @strategy.upgrade row['close'].to_f, row['open'].to_f
     @account.buy row['open'].to_f, 1000 if @strategy.can_buy?
-    @account.sell row['open'].to_f, 1000 if @strategy.can_sell?
-    puts @strategy.average_price
-    # @account.clearance if @strategy.can_sell?
+    @account.clearance row['open'].to_f if @strategy.can_sell?
+    @strategy.upgrade row['close'].to_f, row['open'].to_f
   end
 end
 
