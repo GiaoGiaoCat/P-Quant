@@ -53,6 +53,6 @@ end
 # end
 
 File.open("demo.csv", 'w+') do |file|
-  file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN'
+  file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
   loopback_testing(file, 1.008, 119, 5)
 end

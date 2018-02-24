@@ -38,7 +38,7 @@ class Account
     price = strategy.last_price
     average_price = strategy.average_price
     time = DateTime.strptime(strategy.time,'%s').to_s
-    account_book.puts "#{time},#{type},#{average_price.round(5)},#{price},#{count},#{(price * count).round(5)},#{(price * count * 0.002).round(4)},#{usdt_balance.round(5)},#{coin_balance}"
+    account_book.puts "#{time},#{type},#{average_price.round(5)},#{price},#{count},#{(price * count).round(5)},#{(price * count * 0.002).round(4)},#{usdt_balance.round(5)},#{coin_balance},#{usdt_balance id+(price*coin_balance)}"
 
   end
 
