@@ -1,5 +1,6 @@
+require 'date'
 class Strategy
-  attr_accessor :average_price, :last_price, :close_price_history, :refresh_rate_counter
+  attr_accessor :time, :average_price, :last_price, :close_price_history, :refresh_rate_counter
   attr_accessor :risk, :avg_range, :refresh_rate
 
   def initialize(risk, avg_range, refresh_rate)
@@ -7,6 +8,7 @@ class Strategy
     self.last_price = nil
     self.refresh_rate_counter = 0
     self.close_price_history = []
+    self.time = nil
 
     self.risk = risk
     self.avg_range = avg_range
@@ -15,12 +17,12 @@ class Strategy
 
   def can_buy?
     return false unless average_price
-    last_price > risk * average_price if refresh_rate_counter = refresh_rate
+    last_price > risk * average_price if refresh_rate_counter == refresh_rate
   end
 
   def can_sell?
     return false unless average_price
-    last_price < average_price if refresh_rate_counter = refresh_rate
+    last_price < average_price if refresh_rate_counter == refresh_rate
   end
 
   def calculate_average_price
@@ -29,7 +31,7 @@ class Strategy
   end
 
   def clear_close_price_history
-    until close_price_history.size <= avg_range do
+    until close_price_history.size <= avg_range
       self.close_price_history = close_price_history.yield_self { |ary| ary.shift; ary }
     end
   end
@@ -38,8 +40,9 @@ class Strategy
     self.refresh_rate_counter = 0 if refresh_rate_counter > refresh_rate
   end
 
-  def upgrade(close_price, open_price)
-    self.close_price_history << close_price
+  def upgrade(time, close_price, open_price)
+    self.time = time
+    close_price_history << close_price
     self.last_price = open_price
 
     self.refresh_rate_counter += 1
