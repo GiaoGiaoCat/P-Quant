@@ -4,6 +4,7 @@ require 'csv'
 # require 'parallel'
 require './account'
 require './strategy'
+require './strategy_bak'
 
 # 初始化虚拟账户状态
 def initialize_account(account_book)
@@ -11,13 +12,13 @@ def initialize_account(account_book)
 end
 
 # 初始化策略
-def initialize_strategy(risk, avg_range, refresh_rate)
-  @strategy = Strategy.new(risk, avg_range, refresh_rate)
+def initialize_strategy(risk, avg_range_1, avg_range_2, refresh_rate)
+  @strategy = StrategyBak.new(risk, avg_range_1, avg_range_2, refresh_rate)
 end
 
-def loopback_testing(account_book, risk, avg_range, refresh_rate)
+def loopback_testing(account_book, risk, avg_range_1, avg_range_2, refresh_rate)
   initialize_account(account_book)
-  initialize_strategy(risk, avg_range, refresh_rate)
+  initialize_strategy(risk, avg_range_1, avg_range_2, refresh_rate)
 
   CSV.foreach('data.csv', headers: true) do |row|
     @strategy.upgrade row['time'], row['close'].to_f, row['open'].to_f
@@ -52,7 +53,13 @@ end
 #   end
 # end
 
-File.open("demo.csv", 'w+') do |file|
-  file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
-  loopback_testing(file, 1.008, 119, 5)
+
+
+
+# end
+
+# Plan 1: 买入：P>avg(n) and P>avg(m), m < n, 卖出：P<avg(m)
+File.open("demo2.csv", 'w+') do |file|
+  file.puts '时间,交易类型,平均价1,平均价2,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
+  loopback_testing(file, 1.01, 120, 30, 1)
 end

@@ -11,8 +11,13 @@ class Account
 
   def buy(strategy)
     # return if usdt_balance <= strategy.last_price.to_f * 1000 * 1.002
-    return if usdt_balance <= 500 * 1.002
-    amount = (500 / strategy.last_price.to_f).to_i
+    return if usdt_balance <= strategy.last_price.to_f * 1.002
+    amount =
+      if coin_balance == 0
+        ((usdt_balance / 10) / strategy.last_price.to_f).to_i
+      else
+        ((usdt_balance / 20) / strategy.last_price.to_f).to_i
+      end
     self.usdt_balance -= strategy.last_price.to_f * amount * 1.002
     self.coin_balance += amount
     log strategy, "In", amount
@@ -36,10 +41,8 @@ class Account
 
   def log(strategy, type, count = 1000)
     price = strategy.last_price
-    average_price = strategy.average_price
     time = DateTime.strptime(strategy.time,'%s').to_s
-    account_book.puts "#{time},#{type},#{average_price.round(5)},#{price},#{count},#{(price * count).round(5)},#{(price * count * 0.002).round(4)},#{usdt_balance.round(5)},#{coin_balance},#{usdt_balance id+(price*coin_balance)}"
-
+    account_book.puts "#{time},#{type},#{strategy.average_price_1.round(5)},#{strategy.average_price_2.round(5)},#{price},#{count},#{(price * count).round(5)},#{(price * count * 0.002).round(4)},#{usdt_balance.round(5)},#{coin_balance}"
   end
 
 end
