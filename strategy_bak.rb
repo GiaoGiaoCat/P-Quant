@@ -22,12 +22,12 @@ class StrategyBak
 
   def can_buy?
     return false unless average_price_2
-    last_price > risk * average_price_1 && last_price > risk * average_price_2 if refresh_rate_counter == refresh_rate
+    last_price > risk * average_price_1 && average_price_1 > average_price_2 if refresh_rate_counter == refresh_rate
   end
 
   def can_sell?
     return false unless average_price_2
-    last_price < average_price_2 if refresh_rate_counter == refresh_rate
+    last_price < risk * average_price_2 if refresh_rate_counter == refresh_rate
   end
 
   def calculate_average_price

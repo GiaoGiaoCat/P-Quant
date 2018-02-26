@@ -36,22 +36,26 @@ def clearance
 end
 
 def display_testing_result
-  if @account.usdt_balance > Account::CAPITAL_BASE
-    puts "Money: #{@account.usdt_balance} Risk: #{@strategy.risk} Avg_range: #{@strategy.avg_range}"
+  if @account.usdt_balance > Account::CAPITAL_BASE 
+    puts "Money: #{@account.usdt_balance.round(2)} Risk: #{@strategy.risk} Avg_range_1: #{@strategy.avg_range_1},Avg_range_2: #{@strategy.avg_range_2}"
   end
 end
 
-# Plan 1: 买入：P>Avg(n)，卖出P<Avg(n)，for n from 5 to 120
-# risks = (1.0041..1.02).step(0.001).to_a.each do |risk|
-#   avg_ranges = (5..120).to_a
-#   # refresh_rates = (1..15).to_a
-#   avg_ranges.each do |avg_range|
-#     File.open("plan_1_d/#{avg_range}_#{risk}.csv", 'w+') do |file|
-#       file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN'
-#       loopback_testing(file, risk, avg_range, 5)
-#     end
-#   end
-# end
+#Plan 1: 买入：P>Avg(n)，卖出P<Avg(n)，for n from 5 to 120
+#risks = (9.90..1.04).step(0.01).to_a.each do |risk|
+  avg_range_2 = (5..2400).step(15).to_a.each do |avg_range_2|
+  avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
+   # refresh_rates = (1..15).to_a
+   # avg_ranges.each do |avg_range|
+   #File.open("plan_1_d/#{avg_range_1}_#{avg_range_2}.csv", 'w+') do |file|
+   #file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
+       
+  loopback_testing(@account, 1, avg_range_1, avg_range_2, 1)
+  end
+  end
+ end
+
+
 
 
 
@@ -59,7 +63,8 @@ end
 # end
 
 # Plan 1: 买入：P>avg(n) and P>avg(m), m < n, 卖出：P<avg(m)
-File.open("demo2.csv", 'w+') do |file|
-  file.puts '时间,交易类型,平均价1,平均价2,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
-  loopback_testing(file, 1.01, 120, 30, 1)
-end
+#File.open("demo2.csv", 'w+') do |file|
+#  file.puts '时间,交易类型,平均价1,平均价2,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
+  #loopback_testing(@account, 0.98, 450, 50, 1)
+#end
+puts "end"

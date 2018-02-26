@@ -42,7 +42,7 @@ class Account
   def log(strategy, type, count = 1000)
     price = strategy.last_price
     time = DateTime.strptime(strategy.time,'%s').to_s
-    account_book.puts "#{time},#{type},#{strategy.average_price_1.round(5)},#{strategy.average_price_2.round(5)},#{price},#{count},#{(price * count).round(5)},#{(price * count * 0.002).round(4)},#{usdt_balance.round(5)},#{coin_balance},#{usdt_balance+(price*coin_balance)}"
+    #account_book.puts "#{time},#{type},#{strategy.average_price_1.round(5)},#{strategy.average_price_2.round(5)},#{price},#{count},#{(price * count).round(5)},#{(price * count * 0.002).round(4)},#{usdt_balance.round(5)},#{coin_balance},#{usdt_balance+(price*coin_balance)}"
   end
 
 end
