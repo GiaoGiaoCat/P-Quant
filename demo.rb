@@ -44,15 +44,14 @@ def display_testing_result
 end
 
 #Plan 1: 买入：P>Avg(n)，卖出P<Avg(n)，for n from 5 to 120
-risks = (9.90..1.06).step(0.01).to_a.each do |risk|
-avg_range_2 = (5..2400).step(15).to_a.each do |avg_range_2|
-  avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
-   # refresh_rates = (1..15).to_a
-   # avg_ranges.each do |avg_range|
-   #File.open("plan_1_d/#{avg_range_1}_#{avg_range_2}.csv", 'w+') do |file|
-   #file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
-
-    loopback_testing(@account, risk, avg_range_1, avg_range_2, 1)
+risks = (0.99..1.06).step(0.01).to_a.each do |risk|
+  avg_range_2 = (5..2400).step(15).to_a.each do |avg_range_2|
+    avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
+    # refresh_rates = (1..15).to_a
+    # avg_ranges.each do |avg_range|
+    #File.open("plan_1_d/#{avg_range_1}_#{avg_range_2}.csv", 'w+') do |file|
+    #file.puts '时间,交易类型,平均价,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
+      loopback_testing(@account, risk, avg_range_1, avg_range_2, 1)
     end
   end
  end
