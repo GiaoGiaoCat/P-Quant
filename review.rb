@@ -20,18 +20,15 @@ CSV.foreach("demo.csv", :headers =>true) do |row|
 	end
 end
 rate = win_number.to_f/(win_number.to_f+lose_number.to_f)
-    puts "number of buyin is:" 
-    puts buyin_number
-    puts "number of win is:"
-    puts win_number
-    puts "number of lose is"
-    puts lose_number
-    puts "win rate is"
-    puts rate.round(5)
-end
+    puts "number of buyin is: #{buyin_number}" 
+    puts "number of win is: #{win_number}"
+    puts "number of lose is: #{lose_number}"
+    puts "win rate is: #{rate.round(4)*100}%"
+    puts ""
+    end
 
 #平均最大盈利（MFE）和平均最大衰落（MAE）
-def MFE_MAE
+def mfe_mae
 	arr_MFE = []
 	arr_MAE = []
 	buyin_price =0.0
@@ -67,10 +64,11 @@ def MFE_MAE
 	avg_MFE = arr_MFE.inject{ |sum, el| sum + el }.to_f / arr_MFE.size
 	avg_MAE = arr_MAE.inject{ |sum, el| sum + el }.to_f / arr_MAE.size
 
-	puts "Average MFE is:"
-	puts avg_MFE
-	puts "Average MAE is:"
-	puts avg_MAE
+	puts "Average MFE is: #{avg_MFE.round(4)*100}%"
+	puts "Max Favorable Excursion is: #{arr_MFE.max.round(4)*100}%"
+	puts "Average MAE is: #{avg_MAE.round(4)*100}%"
+	puts "Max adverse Excursion is: #{arr_MAE.max.round(4)*100}%"
+	puts ""
 
 end
 
@@ -78,7 +76,7 @@ end
 def trade_activity_ratio
 
 start_time = nil
-diff = nil
+diff = 0
 
 filename = './data.csv'
 total_minutes = %x{wc -l #{filename}}.split.first.to_i
@@ -90,13 +88,16 @@ CSV.foreach("demo.csv", :headers =>true) do |row|
 		end
 	else
 		end_time = Time.parse(row['时间']).to_i
-		diff = (end_time.to_f - start_time.to_f)/60
+		diff = diff + (end_time.to_f - start_time.to_f)/60
+		start_time = nil
 	end
 end
 	
 trade_activity_ratio = diff / total_minutes
-puts diff
-puts total_minutes
-puts trade_activity_ratio
+puts "trade activity raito is: #{trade_activity_ratio.round(4)*100}%"
+puts ""
 	
 end
+win_rate
+mfe_mae
+trade_activity_ratio
