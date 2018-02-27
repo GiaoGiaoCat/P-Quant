@@ -36,8 +36,10 @@ def clearance
 end
 
 def display_testing_result
-  if @account.usdt_balance > Account::CAPITAL_BASE
-    "Money: #{@account.usdt_balance.round(2)} Risk: #{@strategy.risk} Avg_range_1: #{@strategy.avg_range_1},Avg_range_2: #{@strategy.avg_range_2}"
+  # return false if @account.usdt_balance < Account::CAPITAL_BASE
+  # "Money: #{@account.usdt_balance.round(2)} Risk: #{@strategy.risk} Avg_range_1: #{@strategy.avg_range_1},Avg_range_2: #{@strategy.avg_range_2}"
+  if @account.usdt_balance/Account::CAPITAL_BASE > 1.05
+    puts "#{@account.usdt_balance.round(2)},#{@strategy.risk},#{@strategy.avg_range_1},#{@strategy.avg_range_2}"
   end
 end
 
@@ -55,25 +57,40 @@ end
 #  end
 
 
+# puts "Parent #{Process.pid}"
+# risks = (0.9..1.02).step(0.01).to_a.each do |risk|
+#   fork do
+#     File.open("plan_b/#{risk}.csv", 'a+') do |file|
+#       avg_range_2 = (5..2400).step(15).to_a.each do |avg_range_2|
+#         avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
+#           result = loopback_testing(@account, risk, avg_range_1, avg_range_2, 1)
+#           if @account.usdt_balance > Account::CAPITAL_BASE
+#             file.puts result
+#           end
+#         end
+#       end
+#     end
+#     puts "Child1 #{Process.pid}: #{range1.to_a.index(number)}"
+#   end
+# end
+# Process.wait
+
 puts "Parent #{Process.pid}"
-risks = (0.99..1.06).step(0.01).to_a.each do |risk|
-  fork do
-    File.open("plan_b/#{risk}.csv", 'a+') do |file|
-      avg_range_2 = (5..2400).step(15).to_a.each do |avg_range_2|
-        avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
-          result = loopback_testing(@account, risk, avg_range_1, avg_range_2, 1)
-          file.puts result unless result == ""
-        end
-      end
+fork do
+  avg_range_2 = (5..1200).step(15).to_a.each do |avg_range_2|
+    avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
+      loopback_testing(nil, 0.98, avg_range_1, avg_range_2, 1)
     end
-    puts "Child1 #{Process.pid}: #{range1.to_a.index(number)}"
+  end
+end
+fork do
+  avg_range_2 = (1200..2400).step(15).to_a.each do |avg_range_2|
+    avg_range_1 = (90..7500).step(15).to_a.each do |avg_range_1|
+      loopback_testing(nil, 0.98, avg_range_1, avg_range_2, 1)
+    end
   end
 end
 Process.wait
-
-
-
-
 
 # end
 
