@@ -55,13 +55,15 @@ end
 #  end
 
 # NOTE: 2月27日 策略
-# 买入：P>avg(n) and P>avg(m), m < n, 卖出：P<avg(m)
-%w[btc dta eth iost].each do |data_file|
+# 买入：P>avg(m) and avg(m)>avg(n), m < n,
+# 卖出：P<avg(m)
+# %w[btc dta eth iost].each do |data_file|
+%w[iost].each do |data_file|
   fork do
     File.open("log/#{data_file}_log.csv", 'w+') do |file|
       puts "Working on #{data_file}"
       file.puts '时间,交易类型,平均价1,平均价2,当前交易价,交易数量,交易金额,手续费,USDT,COIN,Net_Value'
-      loopback_testing(file, 0.98, 3000, 20, 1, "data/#{data_file}.csv")
+      loopback_testing(file, 1, 3000, 30, 1, "data/#{data_file}.csv")
     end
   end
 end
