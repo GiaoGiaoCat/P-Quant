@@ -6,8 +6,8 @@ class StrategyBak
   attr_accessor :risk, :avg_range_1, :avg_range_2, :refresh_rate
 
   def initialize(risk, avg_range_1, avg_range_2, refresh_rate)
-    self.average_price_1 = nil
-    self.average_price_2 = nil
+    self.average_price_1 = nil # 3000 均线
+    self.average_price_2 = nil # 30 均线
     self.last_price = nil
     self.refresh_rate_counter = 0
     self.close_price_history_1 = []
@@ -21,13 +21,18 @@ class StrategyBak
   end
 
   def can_buy?
+    return false unless average_price_1
     return false unless average_price_2
-    (last_price > risk * average_price_1) && (average_price_1 < average_price_2) if refresh_rate_counter == refresh_rate
+    if refresh_rate_counter == refresh_rate
+      (last_price > risk * average_price_2) && (average_price_1 < average_price_2)
+    end
   end
 
   def can_sell?
-    return false unless average_price_2
-    last_price < risk * average_price_2 if refresh_rate_counter == refresh_rate
+    return false unless average_price_1 && average_price_2
+    if refresh_rate_counter == refresh_rate
+      last_price < (risk * average_price_2)
+    end
   end
 
   def calculate_average_price
@@ -56,9 +61,9 @@ class StrategyBak
     close_price_history_2 << close_price
     self.last_price = open_price
 
+    reset_refresh_rate_counter
     self.refresh_rate_counter += 1
 
-    reset_refresh_rate_counter
     clear_close_price_history
     calculate_average_price
   end
