@@ -22,9 +22,15 @@ def loopback_testing(account_book, risk, avg_range_1, avg_range_2, refresh_rate,
 
   CSV.foreach(data_file, headers: true) do |row|
     @strategy.upgrade row['time'], row['close'].to_f, row['open'].to_f
-    @account.buy @strategy if @strategy.can_buy?
+    if @strategy.can_buy?
+      @account.buy @strategy
+      @strategy.start_log_offsets = true
+    end
     # @account.sell row['open'].to_f, 1000 if @strategy.can_sell?
-    @account.clearance @strategy if @strategy.can_sell?
+    if @strategy.can_sell?
+      @account.clearance @strategy
+      @strategy.start_log_offsets = false
+    end
   end
 
   clearance
@@ -55,7 +61,7 @@ end
 #  end
 
 # NOTE: 2月27日 策略
-# 买入：P>avg(m) and avg(m)>avg(n), m < n,
+# 买入：P>avg(m) and avg(m)>avg(n) and m < n
 # 卖出：P<avg(m)
 # %w[btc dta eth iost].each do |data_file|
 %w[iost].each do |data_file|

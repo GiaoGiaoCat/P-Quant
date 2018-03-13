@@ -4,6 +4,7 @@ class StrategyBak
   attr_accessor :average_price_1, :average_price_2
   attr_accessor :close_price_history_1, :close_price_history_2
   attr_accessor :risk, :avg_range_1, :avg_range_2, :refresh_rate
+  attr_accessor :offsets, :start_log_offsets
 
   def initialize(risk, avg_range_1, avg_range_2, refresh_rate)
     self.average_price_1 = nil # 3000 均线
@@ -18,6 +19,8 @@ class StrategyBak
     self.avg_range_1 = avg_range_1
     self.avg_range_2 = avg_range_2
     self.refresh_rate = refresh_rate
+    self.offsets = []
+    self.start_log_offsets = false
   end
 
   def can_buy?
@@ -30,8 +33,9 @@ class StrategyBak
 
   def can_sell?
     return false unless average_price_1 && average_price_2
+    return false unless offsets.max
     if refresh_rate_counter == refresh_rate
-      last_price < (risk * average_price_2)
+      last_price < (risk * average_price_2) || offsets.last < (offsets.max * 0.98)
     end
   end
 
@@ -40,6 +44,14 @@ class StrategyBak
     return if close_price_history_2.size < avg_range_2
     self.average_price_1 = close_price_history_1.sum / close_price_history_1.size
     self.average_price_2 = close_price_history_2.sum / close_price_history_2.size
+  end
+
+  def log_offsets
+    return unless average_price_1
+    return unless average_price_2
+    return unless start_log_offsets
+    value = average_price_2 - average_price_1
+    self.offsets << value if value > 0
   end
 
   def clear_close_price_history
@@ -55,6 +67,11 @@ class StrategyBak
     self.refresh_rate_counter = 0 if refresh_rate_counter > refresh_rate
   end
 
+  def reset_offsets
+    return if start_log_offsets
+    self.offsets = []
+  end
+
   def upgrade(time, close_price, open_price)
     self.time = time
     close_price_history_1 << close_price
@@ -64,8 +81,10 @@ class StrategyBak
     reset_refresh_rate_counter
     self.refresh_rate_counter += 1
 
+    reset_offsets
     clear_close_price_history
     calculate_average_price
+    log_offsets
   end
 
 end
